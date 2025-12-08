@@ -1,203 +1,624 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Website</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AMAKURU</title>
+
+<style>
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html,body { height: 100%; font-family: Inter, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#f2f4f7; color:#111;}
+  a { color:inherit; text-decoration:none; }
+  .topbar { background:#111; color:#fff; padding:8px 16px; display:flex; justify-content:space-between; align-items:center; font-size:14px; }
+  .topbar .left a { margin-right:12px; color:#ddd; }
+  .topbar .right a { margin-left:12px; color:#ddd; }
+  header.site-header { background:#fff; padding:18px 16px; display:flex; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid #e6e9ee; position:sticky; top:0; z-index:50; }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .logo { font-weight:800; font-size:28px; color:#d40000; letter-spacing:1px; }
+  .search { display:flex; gap:8px; align-items:center; }
+  .search input { padding:8px 12px; border:1px solid #ddd; border-radius:6px; min-width:200px; }
+  .controls { display:flex; gap:8px; align-items:center; }
+  .btn { background:#d40000; color:#fff; padding:8px 12px; border-radius:6px; border:none; cursor:pointer; font-weight:600; }
+  .btn.secondary { background:transparent; color:#222; border:1px solid #ddd; }
+  nav.categories { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  nav.categories a { padding:10px 14px; border-radius:6px; color:#333; font-weight:600; }
+  nav.categories a.active { background:#d40000; color:white; }
+  .container { max-width:1150px; margin:18px auto; padding:0 16px; display:grid; grid-template-columns: 1fr 320px; gap:18px; align-items:start; }
+  .main { }
+  .sidebar { }
+  .hero { display:flex; gap:14px; background:#fff; padding:14px; border-radius:8px; margin-bottom:16px; box-shadow:0 6px 18px rgba(16,24,40,0.04); }
+  .hero .hero-img { flex:1 1 60%; height:260px; border-radius:8px; overflow:hidden; }
+  .hero img { width:100%; height:100%; object-fit:cover; display:block; }
+  .hero .hero-info { flex:1 1 40%; display:flex; flex-direction:column; gap:10px; }
+  .hero h1 { font-size:20px; }
+  .hero p { color:#444; line-height:1.4; }
+  .section-title { margin:8px 0 12px 0; font-size:18px; font-weight:700; color:#222; display:flex; justify-content:space-between; align-items:center; }
+  .cards { display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; }
+  .card { background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 6px 18px rgba(16,24,40,0.04); display:flex; flex-direction:column; }
+  .card img { width:100%; height:160px; object-fit:cover; display:block; }
+  .card .card-body { padding:12px; flex:1; display:flex; flex-direction:column; gap:8px; }
+  .card .meta { font-size:12px; color:#777; font-weight:600; }
+  .card h3 { font-size:16px; line-height:1.25; }
+  .card p { color:#444; font-size:13px; flex:1; }
+  .widget { background:#fff; padding:12px; border-radius:8px; box-shadow:0 6px 18px rgba(16,24,40,0.04); margin-bottom:12px; }
+  .widget h4 { margin-bottom:8px; }
+  .small-list { display:flex; flex-direction:column; gap:8px; }
+  .small-item { display:flex; gap:10px; align-items:center; }
+  .small-item img { width:72px; height:48px; object-fit:cover; border-radius:6px; }
+  .admin-panel { position:fixed; right:16px; bottom:16px; width:380px; max-width:calc(100% - 32px); z-index:100; }
+  .admin-card { background:#fff; padding:12px; border-radius:10px; box-shadow:0 10px 30px rgba(16,24,40,0.12); }
+  .admin-card h3 { margin-bottom:8px; }
+  .form-row { display:flex; gap:8px; margin-bottom:8px; }
+  .form-row input[type="text"], .form-row input[type="file"], textarea, select { width:100%; padding:8px 10px; border-radius:6px; border:1px solid #e0e6ef; }
+  textarea { min-height:90px; resize:vertical; }
+  .admin-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+  .small { font-size:13px; color:#666; }
+  @media (max-width:1000px) {
+    .cards { grid-template-columns: repeat(2,1fr); }
+    .container { grid-template-columns: 1fr 300px; }
+    .hero { flex-direction:column; }
+    .hero .hero-img { height:220px; }
+  }
+  @media (max-width:720px) {
+    header.site-header { flex-direction:column; align-items:flex-start; gap:10px; }
+    .container { grid-template-columns:1fr; padding-bottom:60px; }
+    .sidebar { order:2; }
+    .main { order:1; }
+    .cards { grid-template-columns:1fr; }
+    .hero .hero-img { height:180px; }
+    nav.categories { overflow:auto; -webkit-overflow-scrolling:touch; }
+  }
+  .muted { color:#666; font-size:13px; }
+  .flex { display:flex; gap:10px; align-items:center; }
+  .gap { height:12px; }
+  .empty { padding:30px; text-align:center; color:#666; background:#fff; border-radius:8px; }
+  .tag { font-size:12px; color:#d40000; font-weight:700; }
+  .card-controls { display:flex; gap:6px; justify-content:flex-end; }
+  .icon-btn { background:transparent; border:1px solid #eee; padding:6px 8px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; }
+</style>
 </head>
-    <style>
-        body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f8f8f8;
-}
-
-/* TOP LANGUAGE BAR */
-.top-bar {
-    background: #c00;
-    color: white;
-    padding: 5px 20px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-}
-
-.top-bar a {
-    color: white;
-    text-decoration: none;
-    margin-right: 10px;
-}
-
-/* HEADER */
-header {
-    background: #001a66;
-    color: white;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-header .logo {
-    font-size: 28px;
-    font-weight: bold;
-}
-
-nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 10px;
-}
-
-.subscribe {
-    background: yellow;
-    border: none;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-/* MAIN CONTENT */
-.main-content {
-    display: flex;
-    padding: 20px;
-}
-
-.featured {
-    width: 70%;
-    margin-right: 20px;
-    background: white;
-    padding: 15px;
-}
-
-.featured img {
-    width: 100%;
-    border-radius: 6px;
-}
-
-.sidebar {
-    width: 30%;
-}
-
-.ad-box {
-    background: red;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    border-radius: 6px;
-}
-
-/* RECENT NEWS */
-.recent {
-    background: #001a33;
-    color: white;
-    padding: 30px 20px;
-}
-
-.recent h2 {
-    margin-bottom: 20px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
-.news-card {
-    background: #fff;
-    color: #000;
-    padding: 10px;
-    border-radius: 6px;
-}
-
-.news-card img {
-    width: 100%;
-    border-radius: 6px;
-}
-
-    </style>
 <body>
+  <div class="topbar">
+    <div class="left">
+      <a href="#" onclick="changeLang('kin')">Kinyarwanda</a>
+      <a href="#" onclick="changeLang('en')">English</a>
+      <a href="#" onclick="changeLang('sw')">Swahili</a>
+      <a href="#" onclick="changeLang('fr')">Français</a>
+    </div>
+    <div class="right">
+      <a href="#">Facebook</a>
+      <a href="#">YouTube</a>
+    </div>
+  </div>
 
-    <!-- TOP LANGUAGE BAR -->
-    <div class="top-bar">
-        <div class="left">
-            <a href="#">Kinyarwanda</a>
-            <a href="#">English</a>
-            <a href="#">Swahili</a>
-            <a href="#">Français</a>
-        </div>
-        <div class="right">
-            <a href="#">Facebook</a>
-            <a href="#">YouTube</a>
-        </div>
+  <!-- header -->
+  <header class="site-header">
+    <div class="brand">
+      <div class="logo">AMAKURU</div>
+      <div class="muted">News • Politiki • Ubukungu • Imikino</div>
     </div>
 
-    <!-- MAIN HEADER -->
-    <header>
-        <div class="logo">AMAKURU</div>
-        <nav>
-            <a href="#">Ahabanza</a>
-            <a href="#">Amakuru</a>
-            <a href="#">Politiki</a>
-            <a href="#">Ubukungu</a>
-            <a href="#">Ubuzima</a>
-            <a href="#">Imikino</a>
-        </nav>
-        <button class="subscribe">Iyandikishe</button>
-    </header>
+    <div class="search">
+      <input id="searchInput" placeholder="Shakisha inkuru... (search)"/>
+      <button class="btn secondary" onclick="doSearch()">Search</button>
+    </div>
 
-    <!-- MAIN CONTENT SECTION -->
-    <section class="main-content">
+    <div class="controls">
+      <button class="btn secondary" id="showAdminBtn">Admin</button>
+      <button class="btn" id="newPostBtn">+ New Post</button>
+    </div>
 
-        <!-- LEFT NEWS -->
-        <div class="featured">
-            <img src="https://via.placeholder.com/800x400" alt="">
-            <h2>Gaspal is good worker of Top Sec</h2>
-            <p>
-                Gaspal is good worker of Top Sec
-            </p>
+    <!-- categories -->
+    <nav class="categories" style="width:100%; margin-top:10px;">
+      <a href="#" id="nav-ahabanza" class="active" data-cat="ahabanza">Ahabanza</a>
+      <a href="#" id="nav-amakuru" data-cat="amakuru">Amakuru</a>
+      <a href="#" id="nav-politiki" data-cat="politiki">Politiki</a>
+      <a href="#" id="nav-ubukungu" data-cat="ubukungu">Ubukungu</a>
+      <a href="#" id="nav-ubuzima" data-cat="ubuzima">Ubuzima</a>
+      <a href="#" id="nav-imikino" data-cat="imikino">Imikino</a>
+    </nav>
+  </header>
+
+  <!-- main container -->
+  <div class="container">
+    <main class="main">
+
+      <!-- hero -->
+      <div class="hero" id="hero">
+        <div class="hero-img" id="heroImage">
+          <img src="data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='%23ddd'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23777' font-size='28'>No hero image yet</text></svg>" alt="">
+        </div>
+        <div class="hero-info">
+          <h1 id="heroTitle">Welcome to AMAKURU — your news hub</h1>
+          <p id="heroSummary">This is a demo news layout. Click categories above to filter news. Use Admin to create posts that appear in categories.</p>
+          <div class="muted small">Latest • Automated demo</div>
+        </div>
+      </div>
+
+      <!-- section -->
+      <div>
+        <div class="section-title">
+          <div><span class="tag" id="activeCategoryLabel">Ahabanza</span> · <span class="muted" id="categoryCount">0 Inkuru</span></div>
         </div>
 
-        <!-- RIGHT SIDEBAR -->
-        <aside class="sidebar">
-            <div class="ad-box">
-                <h3>SUBSCRIBE</h3>
-                <p>200 FRW / DAY</p>
-                <p>1200 FRW / WEEK</p>
-                <p>4500 FRW / MONTH</p>
-                <p>50,000 FRW / YEAR</p>
-            </div>
-        </aside>
-
-    </section>
-
-    <!-- RECENT NEWS SECTION -->
-    <section class="recent">
-        <h2>Inkuru Ziheruka</h2>
-
-        <div class="grid">
-            <div class="news-card">
-                <img src="https://via.placeholder.com/300x200" alt="">
-                <h3>Burundi bwacu</h3>
-            </div>
-
-            <div class="news-card">
-                <img src="https://via.placeholder.com/300x200" alt="">
-                <h3> Kayonza: Abagize Komite Nyobozi y’Akarere barimo Meya Nyemazi bahagaritswe</h3>
-            </div>
-
-            <div class="news-card">
-                <img src="https://via.placeholder.com/300x200" alt="">
-                <h3> Trump aratangaje ko...</h3>
-            </div>
+        <div id="cardsContainer" class="cards">
+          <!-- cards produced by JS -->
         </div>
-    </section>
 
+        <div id="emptyPlaceholder" class="empty" style="display:none;">No posts in this category. Create one using the Admin panel.</div>
+      </div>
+    </main>
+
+    <!-- sidebar -->
+    <aside class="sidebar">
+      <div class="widget">
+        <h4>Iyandikishe (Subscribe)</h4>
+        <p class="muted">200 FRW / DAY · 1200 RW / WEEK · 4500 RW / MONTH</p>
+      </div>
+
+      <div class="widget">
+        <h4>Inkuru za vuba (Recent)</h4>
+        <div id="recentList" class="small-list"></div>
+      </div>
+
+      <div class="widget">
+        <h4>Top Imikino</h4>
+        <div class="small-list" id="topSports"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- admin panel (hidden by default) -->
+  <div class="admin-panel" id="adminPanel" style="display:none;">
+    <div class="admin-card">
+      <h3>Admin — Post Editor</h3>
+
+      <div class="form-row">
+        <input id="postTitle" type="text" placeholder="Title (Icyiciro)"/>
+      </div>
+
+      <div class="form-row">
+        <select id="postCategory">
+          <option value="ahabanza">Ahabanza</option>
+          <option value="amakuru">Amakuru</option>
+          <option value="politiki">Politiki</option>
+          <option value="ubukungu">Ubukungu</option>
+          <option value="ubuzima">Ubuzima</option>
+          <option value="imikino">Imikino</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <input id="postImage" type="file" accept="image/*" />
+      </div>
+
+      <div class="form-row">
+        <textarea id="postSummary" placeholder="Short summary..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <textarea id="postBody" placeholder="Full article content..."></textarea>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="small">Tip: images are saved locally as data URLs.</div>
+        <div class="admin-actions">
+          <button class="btn secondary" onclick="closeAdmin()">Close</button>
+          <button class="btn" id="savePostBtn">Save Post</button>
+        </div>
+      </div>
+
+      <div style="margin-top:8px; display:flex; gap:8px;">
+        <button class="icon-btn" onclick="prefillDemo()">Add demo posts</button>
+        <button class="icon-btn" onclick="clearAllPosts()" title="Clear all posts (localStorage)">Clear all</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* -------------------------
+   Data & Local Storage API
+   ------------------------- */
+
+const LS_KEY = "amukuru_posts_v1";
+
+/* post structure:
+  {
+    id: 'uuid',
+    title: '',
+    category: 'amakuru'|'politiki'|...,
+    summary: '',
+    body: '',
+    image: 'data:image/...',
+    createdAt: timestamp
+  }
+*/
+
+function readPosts() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch (e) { return []; }
+}
+function writePosts(posts) {
+  localStorage.setItem(LS_KEY, JSON.stringify(posts));
+}
+
+/* -------------------------
+   Utilities
+   ------------------------- */
+function uid() {
+  return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+}
+function timeAgo(ts) {
+  const sec = Math.floor((Date.now() - ts)/1000);
+  if (sec < 60) return sec + "s";
+  if (sec < 3600) return Math.floor(sec/60) + "m";
+  if (sec < 86400) return Math.floor(sec/3600) + "h";
+  return Math.floor(sec/86400) + "d";
+}
+
+/* -------------------------
+   Rendering
+   ------------------------- */
+
+let activeCategory = 'ahabanza';
+
+function setActiveCategory(cat) {
+  activeCategory = cat;
+  document.querySelectorAll('nav.categories a').forEach(a => {
+    a.classList.toggle('active', a.dataset.cat === cat);
+  });
+  document.getElementById('activeCategoryLabel').textContent = capitalize(cat);
+  renderAll();
+}
+
+function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function renderAll() {
+  renderHero();
+  renderCards();
+  renderRecent();
+  renderTopSports();
+}
+
+function renderHero() {
+  const posts = readPosts().sort((a,b)=>b.createdAt-a.createdAt);
+  const hero = posts.find(p => p.category === activeCategory) || posts[0];
+  if (hero) {
+    document.getElementById('heroTitle').textContent = hero.title;
+    document.getElementById('heroSummary').textContent = hero.summary || hero.body.slice(0,180);
+    const img = hero.image || placeholderImage();
+    document.querySelector('#heroImage img').src = img;
+  } else {
+    document.getElementById('heroTitle').textContent = 'Welcome to AMAKURU — your news hub';
+    document.getElementById('heroSummary').textContent = 'This is a demo news layout. Click categories above to filter news. Use Admin to create posts that appear in categories.';
+    document.querySelector('#heroImage img').src = placeholderImage();
+  }
+}
+
+function renderCards() {
+  const all = readPosts().sort((a,b)=>b.createdAt-a.createdAt);
+  const filtered = all.filter(p => activeCategory === 'ahabanza' ? true : p.category === activeCategory);
+  const container = document.getElementById('cardsContainer');
+  container.innerHTML = '';
+  if (filtered.length === 0) {
+    document.getElementById('emptyPlaceholder').style.display = 'block';
+  } else {
+    document.getElementById('emptyPlaceholder').style.display = 'none';
+  }
+  filtered.forEach(p => {
+    const el = document.createElement('article');
+    el.className = 'card';
+    el.innerHTML = `
+      <img src="${p.image || placeholderImage()}" alt="">
+      <div class="card-body">
+        <div class="meta"><span class="tag">${capitalize(p.category)}</span> • <span class="muted">${timeAgo(p.createdAt)}</span></div>
+        <h3>${escapeHtml(p.title)}</h3>
+        <p>${escapeHtml(p.summary || p.body.slice(0,120))}</p>
+        <div class="card-controls">
+          <button class="icon-btn" onclick="openView('${p.id}')">View</button>
+          <button class="icon-btn" onclick="editPost('${p.id}')">Edit</button>
+          <button class="icon-btn" onclick="deletePost('${p.id}')">Delete</button>
+        </div>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+
+  document.getElementById('categoryCount').textContent = filtered.length + ' Inkuru';
+}
+
+/* Recent list in sidebar */
+function renderRecent() {
+  const all = readPosts().sort((a,b)=>b.createdAt-a.createdAt).slice(0,5);
+  const recent = document.getElementById('recentList');
+  recent.innerHTML = '';
+  if (all.length === 0) {
+    recent.innerHTML = '<div class="muted">No recent posts</div>';
+  } else {
+    all.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'small-item';
+      div.innerHTML = `<img src="${p.image || placeholderImage()}" alt="">
+                       <div style="flex:1">
+                         <div style="font-weight:700">${truncate(p.title,60)}</div>
+                         <div class="muted">${timeAgo(p.createdAt)}</div>
+                       </div>`;
+      div.onclick = ()=>{ openView(p.id); };
+      recent.appendChild(div);
+    });
+  }
+}
+
+/* Top sports (just filter category 'imikino') */
+function renderTopSports() {
+  const sports = readPosts().filter(p=>p.category==='imikino').sort((a,b)=>b.createdAt-a.createdAt).slice(0,4);
+  const node = document.getElementById('topSports');
+  node.innerHTML = '';
+  if (sports.length === 0) {
+    node.innerHTML = '<div class="muted">No sports posts</div>';
+  } else {
+    sports.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'small-item';
+      item.innerHTML = `<img src="${p.image || placeholderImage()}" alt=""><div><div style="font-weight:700">${truncate(p.title,50)}</div><div class="muted">${timeAgo(p.createdAt)}</div></div>`;
+      node.appendChild(item);
+    });
+  }
+}
+
+/* -------------------------
+   Admin actions
+   ------------------------- */
+
+document.getElementById('nav-ahabanza').addEventListener('click', e=>{ e.preventDefault(); setActiveCategory('ahabanza'); });
+document.getElementById('nav-amakuru').addEventListener('click', e=>{ e.preventDefault(); setActiveCategory('amakuru'); });
+document.getElementById('nav-politiki').addEventListener('click', e=>{ e.preventDefault(); setActiveCategory('politiki'); });
+document.getElementById('nav-ubukungu').addEventListener('click', e=>{ e.preventDefault(); setActiveCategory('ubukungu'); });
+document.getElementById('nav-ubuzima').addEventListener('click', e=>{ e.preventDefault(); setActiveCategory('ubuzima'); });
+document.getElementById('nav-imikino').addEventListener('click', e=>{ e.preventDefault(); setActiveCategory('imikino'); });
+
+document.getElementById('showAdminBtn').addEventListener('click', ()=> {
+  // Simple password gate
+  const p = prompt("Enter admin password (demo):", "");
+  if (p === null) return;
+  if (p.trim() === "admin") {
+    openAdmin();
+  } else {
+    alert("Wrong password. Use 'admin' to open admin in this demo.");
+  }
+});
+document.getElementById('newPostBtn').addEventListener('click', ()=> {
+  openAdmin();
+  clearForm();
+});
+
+function openAdmin() {
+  document.getElementById('adminPanel').style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function closeAdmin() {
+  document.getElementById('adminPanel').style.display = 'none';
+}
+
+function clearForm() {
+  document.getElementById('postTitle').value = '';
+  document.getElementById('postSummary').value = '';
+  document.getElementById('postBody').value = '';
+  document.getElementById('postCategory').value = activeCategory || 'ahabanza';
+  document.getElementById('postImage').value = '';
+  document.getElementById('savePostBtn').dataset.editId = '';
+}
+
+/* handle save (create & update) */
+document.getElementById('savePostBtn').addEventListener('click', ()=> {
+  const title = document.getElementById('postTitle').value.trim();
+  const category = document.getElementById('postCategory').value;
+  const summary = document.getElementById('postSummary').value.trim();
+  const body = document.getElementById('postBody').value.trim();
+  const fileInput = document.getElementById('postImage');
+  const editId = document.getElementById('savePostBtn').dataset.editId || '';
+
+  if (!title) { alert('Title is required'); return; }
+
+  // If file selected, read it first
+  const file = fileInput.files && fileInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const imgData = e.target.result;
+      upsertPost({ id: editId, title, category, summary, body, image: imgData });
+    };
+    reader.readAsDataURL(file);
+  } else {
+    upsertPost({ id: editId, title, category, summary, body, image: null });
+  }
+});
+
+function upsertPost(postData) {
+  const posts = readPosts();
+  if (postData.id) {
+    // update
+    const idx = posts.findIndex(p=>p.id===postData.id);
+    if (idx !== -1) {
+      posts[idx].title = postData.title;
+      posts[idx].category = postData.category;
+      posts[idx].summary = postData.summary;
+      posts[idx].body = postData.body;
+      if (postData.image) posts[idx].image = postData.image;
+      posts[idx].createdAt = Date.now(); // move to top
+      writePosts(posts);
+      closeAdmin();
+      renderAll();
+      alert('Updated post.');
+      return;
+    } else {
+      alert('Post not found to edit.');
+      return;
+    }
+  } else {
+    // insert
+    const newPost = {
+      id: uid(),
+      title: postData.title,
+      category: postData.category,
+      summary: postData.summary,
+      body: postData.body,
+      image: postData.image || placeholderImage(),
+      createdAt: Date.now()
+    };
+    posts.push(newPost);
+    writePosts(posts);
+    closeAdmin();
+    renderAll();
+    alert('Post created.');
+  }
+}
+
+/* Edit & Delete functions */
+function editPost(id) {
+  const posts = readPosts();
+  const p = posts.find(x=>x.id===id);
+  if (!p) { alert('Post not found'); return; }
+  openAdmin();
+  document.getElementById('postTitle').value = p.title;
+  document.getElementById('postCategory').value = p.category;
+  document.getElementById('postSummary').value = p.summary;
+  document.getElementById('postBody').value = p.body;
+  document.getElementById('savePostBtn').dataset.editId = p.id;
+}
+
+function deletePost(id) {
+  if (!confirm('Delete this post?')) return;
+  const posts = readPosts().filter(p=>p.id!==id);
+  writePosts(posts);
+  renderAll();
+}
+
+/* View post modal (browser alert simplified) */
+function openView(id) {
+  const posts = readPosts();
+  const p = posts.find(x=>x.id===id);
+  if (!p) return;
+  const content = `${p.title}\n\n${p.summary || ''}\n\n${p.body || ''}\n\nCategory: ${capitalize(p.category)} • ${new Date(p.createdAt).toLocaleString()}`;
+  // For demo: we show in new window with image and better layout
+  const w = window.open("", "_blank", "noopener");
+  w.document.write(`<title>${escapeHtml(p.title)}</title>`);
+  w.document.write(`<style>body{font-family:Inter,Arial;padding:20px;max-width:900px;margin:auto} img{max-width:100%;height:auto;border-radius:8px} h1{color:#d40000} .muted{color:#666}</style>`);
+  w.document.write(`<h1>${escapeHtml(p.title)}</h1><div class="muted">Category: ${capitalize(p.category)} • ${new Date(p.createdAt).toLocaleString()}</div><img src="${p.image || placeholderImage()}" alt=""><p style="margin-top:12px">${escapeHtml(p.summary)}</p><div>${escapeHtml(p.body).replace(/\n/g,'<br>')}</div>`);
+  w.document.close();
+}
+
+/* -------------------------
+    Helpers & small UI tools
+   ------------------------- */
+
+function placeholderImage() {
+  // simple grey data url to avoid extra network requests
+  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='%23e6e9ef'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='28'>AMAKURU — image</text></svg>`);
+}
+
+function truncate(s,n){ return s.length>n ? s.slice(0,n-1)+'…' : s; }
+function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
+
+/* -------------------------
+   Search
+   ------------------------- */
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!q) { alert('Type a search term'); return; }
+  const posts = readPosts();
+  const results = posts.filter(p => (p.title + ' ' + p.summary + ' ' + p.body).toLowerCase().includes(q));
+  if (results.length === 0) { alert('No results found'); return; }
+  // Show results: temporarily set cards to results (no category filter)
+  document.getElementById('activeCategoryLabel').textContent = 'Search results';
+  document.getElementById('categoryCount').textContent = results.length + ' Inkuru';
+  const container = document.getElementById('cardsContainer');
+  container.innerHTML = '';
+  results.forEach(p => {
+    const el = document.createElement('article');
+    el.className = 'card';
+    el.innerHTML = `
+      <img src="${p.image || placeholderImage()}" alt="">
+      <div class="card-body">
+        <div class="meta"><span class="tag">${capitalize(p.category)}</span> • <span class="muted">${timeAgo(p.createdAt)}</span></div>
+        <h3>${escapeHtml(p.title)}</h3>
+        <p>${escapeHtml(p.summary || p.body.slice(0,120))}</p>
+        <div class="card-controls">
+          <button class="icon-btn" onclick="openView('${p.id}')">View</button>
+          <button class="icon-btn" onclick="editPost('${p.id}')">Edit</button>
+        </div>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+}
+
+/* -------------------------
+   Demo helpers & seed data
+   ------------------------- */
+
+function prefillDemo() {
+  if (!confirm('Insert demo posts? This will append to your current posts.')) return;
+  const base = [
+    { title:'Guverinoma yatangaje gahunda nshya y’ubukungu', category:'ubukungu', summary:'Gahunda izateza imbere ishoramari mu karere hose.', body:'Minisitiri w’ubukungu yatangaje gahunda nshya yo guteza imbere ishoramari...' },
+    { title:'Amatora ari hafi: abakandida bashyizeho gahunda', category:'politiki', summary:'Abakandida barimo gusobanura politiki zabo ku bitabiriye.', body:'Mu minsi mike iri imbere, amatora azaba mu gihugu...' },
+    { title:'Ikipe y’igihugu yatsinze umukino ukomeye', category:'imikino', summary:'Abafana bishimiye intsinzi ya 2-1.', body:'Mu mukino wahuje amakipe abiri, ikipe y’igihugu yatsinze ibitego bibiri...' },
+    { title:'Ubuzima: inama ku ndwara z’ibihe', category:'ubuzima', summary:'Abaganga batanga inama z’uko twirinda indwara z’ibihe.', body:'Mu gihe cy’imbeho n’izuba, abaganga bagira inama...' },
+    { title:'Inkuru z’amakuru mpuzamahanga', category:'amakuru', summary:'Amakuru y’ingenzi y’isi yose muri uyu munsi.', body:'Ibyabaye ku isi muri uyu munsi birimo...' }
+  ];
+  const posts = readPosts();
+  base.forEach(b => {
+    posts.push({
+      id: uid(),
+      title: b.title,
+      category: b.category,
+      summary: b.summary,
+      body: b.body,
+      image: placeholderImage(),
+      createdAt: Date.now() - Math.floor(Math.random()*1000*60*60*24)
+    });
+  });
+  writePosts(posts);
+  renderAll();
+}
+
+/* clear all */
+function clearAllPosts() {
+  if (!confirm('Remove ALL posts from this browser localStorage?')) return;
+  localStorage.removeItem(LS_KEY);
+  renderAll();
+}
+
+/* initially seed with demo posts if none exist */
+(function init() {
+  if (readPosts().length === 0) {
+    // create one hero post to avoid empty look
+    const demo = [{
+      id: uid(),
+      title: 'AMAKURU Demo — How to use this site',
+      category: 'ahabanza',
+      summary: 'Use Admin -> New Post to create articles. Posts are stored in your browser (localStorage).',
+      body: 'This demo shows a full front-end + admin flow without a backend. Upload images, select categories, and manage posts locally.',
+      image: placeholderImage(),
+      createdAt: Date.now()
+    }];
+    writePosts(demo);
+  }
+  renderAll();
+})();
+
+/* small helpers */
+function truncate(s,n){ return s && s.length>n ? s.slice(0,n-1)+'…' : (s||''); }
+function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
+
+/* language placeholder (no translations implemented) */
+function changeLang(l){
+  alert('Language switching placeholder. Implement translations in your JS to fully switch texts. Selected: ' + l);
+}
+</script>
 </body>
 </html>
-
-
-
-
